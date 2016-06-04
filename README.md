@@ -3,11 +3,11 @@ This server master build have a little fix in database for using with remote Lin
 
 Сервер имеющий маленький фикс базы данных для работы с удалёнными серверами Линукс.
 
-# Server ready to work.
+Server ready to work.
 
 Сервер готовый к работе.
 
-Installation server
+# Installation server
 
 1. Download Arma 2+ Arma 2:OA and mod DayZ
 2. Download and install MS Net. freamwork 4.5 and Visual
