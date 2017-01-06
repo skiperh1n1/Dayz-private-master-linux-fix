@@ -1,2 +1,1 @@
-1.8.7
-Files DataBaseMysql.dll, DataBasePostgre.dll, tbb.dll and tbbmalloc.dll copy to main derectory with split Armas
+DayZMod 1.8.8 
