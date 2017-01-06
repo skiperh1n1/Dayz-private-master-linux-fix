@@ -21,8 +21,8 @@ CREATE DEFINER=`dayzhivemind`@`%` EVENT `3h updates` ON SCHEDULE EVERY 3 HOUR ST
 END//
 DELIMITER ;
 
--- Dumping structure for table hivemind.Character_DATA
-CREATE TABLE IF NOT EXISTS `Character_DATA` (
+-- Dumping structure for table hivemind.character_data
+CREATE TABLE IF NOT EXISTS `character_data` (
   `CharacterID` int(11) NOT NULL AUTO_INCREMENT,
   `PlayerID` int(11) NOT NULL DEFAULT '1000',
   `PlayerUID` varchar(45) NOT NULL DEFAULT '0',
@@ -54,13 +54,13 @@ CREATE TABLE IF NOT EXISTS `Character_DATA` (
   KEY `Alive_PlayerUID` (`Alive`,`LastLogin`,`PlayerUID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dumping data for table hivemind.Character_DATA: ~0 rows (approximately)
-DELETE FROM `Character_DATA`;
-/*!40000 ALTER TABLE `Character_DATA` DISABLE KEYS */;
-/*!40000 ALTER TABLE `Character_DATA` ENABLE KEYS */;
+-- Dumping data for table hivemind.character_data: ~0 rows (approximately)
+DELETE FROM `character_data`;
+/*!40000 ALTER TABLE `character_data` DISABLE KEYS */;
+/*!40000 ALTER TABLE `character_data` ENABLE KEYS */;
 
--- Dumping structure for table hivemind.Character_DEAD
-CREATE TABLE IF NOT EXISTS `Character_DEAD` (
+-- Dumping structure for table hivemind.character_dead
+CREATE TABLE IF NOT EXISTS `character_dead` (
   `CharacterID` int(11) NOT NULL AUTO_INCREMENT,
   `PlayerID` int(11) NOT NULL DEFAULT '0',
   `PlayerUID` varchar(45) NOT NULL DEFAULT '0',
@@ -92,10 +92,10 @@ CREATE TABLE IF NOT EXISTS `Character_DEAD` (
   KEY `Alive_PlayerUID` (`Alive`,`LastLogin`,`PlayerUID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
 
--- Dumping data for table hivemind.Character_DEAD: ~0 rows (approximately)
-DELETE FROM `Character_DEAD`;
-/*!40000 ALTER TABLE `Character_DEAD` DISABLE KEYS */;
-/*!40000 ALTER TABLE `Character_DEAD` ENABLE KEYS */;
+-- Dumping data for table hivemind.character_dead: ~0 rows (approximately)
+DELETE FROM `character_dead`;
+/*!40000 ALTER TABLE `character_dead` DISABLE KEYS */;
+/*!40000 ALTER TABLE `character_dead` ENABLE KEYS */;
 
 -- Dumping structure for function hivemind.countVehicles
 DELIMITER //
@@ -106,7 +106,7 @@ BEGIN
 	
 	SELECT COUNT(*)
 	INTO count
-	FROM Object_DATA
+	FROM object_data
 	WHERE CharacterID = 0
 		AND Instance = inst;
 	
@@ -123,7 +123,7 @@ BEGIN
 	
 	SELECT COUNT(*)
 		INTO count
-		FROM Object_DATA
+		FROM object_data
 		WHERE Instance = inst
 		AND CharacterID = 0
 		AND Classname = c;
@@ -141,24 +141,24 @@ BEGIN
 	
 	/*SELECT COUNT(*)
 		INTO count
-		FROM Object_DATA AS obj
+		FROM object_data AS obj
 		WHERE CharacterID = 0
 			AND Instance = instance
-		AND t = (SELECT `Group` FROM Vehicle_SPAWNS AS spawn WHERE spawn.Classname = obj.Classname LIMIT 1);*/
+		AND t = (SELECT `Group` FROM vehicle_spawns AS spawn WHERE spawn.Classname = obj.Classname LIMIT 1);*/
 	
 	SELECT COUNT(*)
 	INTO count
-	FROM Object_DATA
+	FROM object_data
 	WHERE CharacterID = 0
 		AND Instance = inst
 		AND Classname IN
 		(
 			SELECT Classname
-			FROM Vehicle_SPAWNS
+			FROM vehicle_spawns
 			WHERE ID IN
 			(
 				SELECT Spawn_ID
-				FROM Vehicle_SPAWNS_GROUPS
+				FROM vehicle_spawns_groups
 				WHERE Group_ID = groupid
 			)
 		);
@@ -199,7 +199,7 @@ BEGIN
 	WHILE (UID = 0) DO
 		SET UID = ROUND(Min + RAND() * (Max - Min));
 		
-		IF (UID IN (SELECT ObjectUID FROM Object_DATA WHERE CharacterID = 0 AND Instance = inst)) THEN
+		IF (UID IN (SELECT ObjectUID FROM object_data WHERE CharacterID = 0 AND Instance = inst)) THEN
 			SET UID = 0;
 		END IF;
 	END WHILE;
@@ -212,15 +212,15 @@ DELIMITER ;
 DELIMITER //
 CREATE DEFINER=`dayzhivemind`@`%` FUNCTION `getNumSpawnable`(`inst` int, `spawnid` int) RETURNS int(11)
 BEGIN
-	DECLARE Class_Max INT DEFAULT (SELECT MaxNum - countVehiclesClass(inst, Classname) FROM Vehicle_SPAWNS WHERE ID = spawnid LIMIT 1);
+	DECLARE Class_Max INT DEFAULT (SELECT MaxNum - countVehiclesClass(inst, Classname) FROM vehicle_spawns WHERE ID = spawnid LIMIT 1);
 	DECLARE Group_Max INT DEFAULT
 	(
 		SELECT MIN(MaxNum - countVehiclesGroup(inst, ID))
-		FROM Vehicle_GROUPS
+		FROM vehicle_groups
 		WHERE ID IN
 		(
 			SELECT Group_ID
-			FROM Vehicle_SPAWNS_GROUPS
+			FROM vehicle_spawns_groups
 			WHERE Spawn_ID = spawnid
 		)
 	);
@@ -229,8 +229,8 @@ BEGIN
 END//
 DELIMITER ;
 
--- Dumping structure for table hivemind.Object_CLASSES
-CREATE TABLE IF NOT EXISTS `Object_CLASSES` (
+-- Dumping structure for table hivemind.object_classes
+CREATE TABLE IF NOT EXISTS `object_classes` (
   `Classname` varchar(32) NOT NULL DEFAULT '',
   `Chance` varchar(4) NOT NULL DEFAULT '0',
   `MaxNum` tinyint(1) unsigned NOT NULL DEFAULT '0',
@@ -239,10 +239,10 @@ CREATE TABLE IF NOT EXISTS `Object_CLASSES` (
   PRIMARY KEY (`Classname`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table hivemind.Object_CLASSES: 59 rows
-DELETE FROM `Object_CLASSES`;
-/*!40000 ALTER TABLE `Object_CLASSES` DISABLE KEYS */;
-INSERT INTO `Object_CLASSES` (`Classname`, `Chance`, `MaxNum`, `Damage`, `Type`) VALUES
+-- Dumping data for table hivemind.object_classes: 59 rows
+DELETE FROM `object_classes`;
+/*!40000 ALTER TABLE `object_classes` DISABLE KEYS */;
+INSERT INTO `object_classes` (`Classname`, `Chance`, `MaxNum`, `Damage`, `Type`) VALUES
 	('ATV_CZ_EP1', '0.70', 6, '0.05000', 'atv'),
 	('car_hatchback', '0.73', 3, '0.05000', 'car'),
 	('datsun1_civil_3_open', '0.75', 3, '0.05000', 'car'),
@@ -302,10 +302,10 @@ INSERT INTO `Object_CLASSES` (`Classname`, `Chance`, `MaxNum`, `Damage`, `Type`)
 	('StashSmall', '0', 0, '0', 'StashSmall'),
 	('StashMedium', '0', 0, '0', 'StashMedium'),
 	('Pickup_PK_INS', '0.10', 1, '0.42500', 'car');
-/*!40000 ALTER TABLE `Object_CLASSES` ENABLE KEYS */;
+/*!40000 ALTER TABLE `object_classes` ENABLE KEYS */;
 
--- Dumping structure for table hivemind.Object_DATA
-CREATE TABLE IF NOT EXISTS `Object_DATA` (
+-- Dumping structure for table hivemind.object_data
+CREATE TABLE IF NOT EXISTS `object_data` (
   `ObjectID` int(11) NOT NULL AUTO_INCREMENT,
   `ObjectUID` bigint(20) NOT NULL DEFAULT '0',
   `Instance` int(11) NOT NULL,
@@ -324,10 +324,10 @@ CREATE TABLE IF NOT EXISTS `Object_DATA` (
   KEY `Instance` (`Damage`,`Instance`)
 ) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=latin1;
 
--- Dumping data for table hivemind.Object_DATA: ~53 rows (approximately)
-DELETE FROM `Object_DATA`;
-/*!40000 ALTER TABLE `Object_DATA` DISABLE KEYS */;
-INSERT INTO `Object_DATA` (`ObjectID`, `ObjectUID`, `Instance`, `Classname`, `Datestamp`, `CharacterID`, `Worldspace`, `Inventory`, `Hitpoints`, `Fuel`, `Damage`, `last_updated`) VALUES
+-- Dumping data for table hivemind.object_data: ~53 rows (approximately)
+DELETE FROM `object_data`;
+/*!40000 ALTER TABLE `object_data` DISABLE KEYS */;
+INSERT INTO `object_data` (`ObjectID`, `ObjectUID`, `Instance`, `Classname`, `Datestamp`, `CharacterID`, `Worldspace`, `Inventory`, `Hitpoints`, `Fuel`, `Damage`, `last_updated`) VALUES
 	(1, 44000166, 1337, 'SUV_DZ', '2016-06-19 09:36:55', 0, '[339,[11243.3,5376.82,0]]', '[]', '[["karoserie",0.6695],["motor",0.7473],["palivo",0.6322],["wheel_1_1_steering",0.8382],["wheel_1_2_steering",0.7978],["wheel_2_1_steering",0.8745],["wheel_2_2_steering",0.9794]]', 0.54654, 0.54218, '2016-06-19 09:36:55'),
 	(2, 17991566, 1337, 'UAZ_Unarmed_UN_EP1', '2016-06-19 09:36:55', 0, '[337,[9715.0352,6522.8286,0]]', '[]', '[["karoserie",0.8188],["motor",0.6938],["palivo",0.7410],["wheel_1_1_steering",0.6476],["wheel_1_2_steering",0.7918],["wheel_2_1_steering",0.6161],["wheel_2_2_steering",0.9051]]', 0.55513, 0.30835, '2016-06-19 09:36:55'),
 	(3, 42194545, 1337, 'Volha_1_TK_CIV_EP1', '2016-06-19 09:36:55', 0, '[160,[11940.6,8868.87,0]]', '[]', '[["karoserie",0.6383],["motor",0.6811],["palivo",0.7482],["wheel_1_1_steering",0.7959],["wheel_1_2_steering",0.6899],["wheel_2_1_steering",0.8619],["wheel_2_2_steering",0.8400]]', 0.02823, 0.42584, '2016-06-19 09:36:55'),
@@ -381,10 +381,10 @@ INSERT INTO `Object_DATA` (`ObjectID`, `ObjectUID`, `Instance`, `Classname`, `Da
 	(51, 93523898, 1337, 'ATV_US_EP1', '2016-06-19 09:36:55', 0, '[166,[8316.43,7497.42,0]]', '[]', '[["karoserie",0.6899],["motor",0.6679],["palivo",0.6047],["wheel_1_1_steering",0.6402],["wheel_1_2_steering",0.7727],["wheel_2_1_steering",0.9428],["wheel_2_2_steering",0.9958]]', 0.30195, 0.75081, '2016-06-19 09:36:55'),
 	(52, 58144503, 1337, 'ATV_US_EP1', '2016-06-19 09:36:55', 0, '[50,[3684.0366, 5999.0117,0]]', '[]', '[["karoserie",0.7205],["motor",0.7803],["palivo",0.7208],["wheel_1_1_steering",0.7267],["wheel_1_2_steering",0.9086],["wheel_2_1_steering",0.9628],["wheel_2_2_steering",0.6883]]', 0.30618, 0.35071, '2016-06-19 09:36:55'),
 	(53, 80656716, 1337, 'TT650_Ins', '2016-06-19 09:36:55', 0, '[291,[11945.78,9099.3633,0]]', '[]', '[["motor",0.7204]]', 0.52464, 0.48343, '2016-06-19 09:36:55');
-/*!40000 ALTER TABLE `Object_DATA` ENABLE KEYS */;
+/*!40000 ALTER TABLE `object_data` ENABLE KEYS */;
 
--- Dumping structure for table hivemind.Object_SPAWNS
-CREATE TABLE IF NOT EXISTS `Object_SPAWNS` (
+-- Dumping structure for table hivemind.object_spawns
+CREATE TABLE IF NOT EXISTS `object_spawns` (
   `ObjectUID` bigint(20) NOT NULL DEFAULT '0',
   `Classname` varchar(32) DEFAULT NULL,
   `Worldspace` varchar(64) DEFAULT NULL,
@@ -395,10 +395,10 @@ CREATE TABLE IF NOT EXISTS `Object_SPAWNS` (
   PRIMARY KEY (`ObjectUID`,`MapID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table hivemind.Object_SPAWNS: 94 rows
-DELETE FROM `Object_SPAWNS`;
-/*!40000 ALTER TABLE `Object_SPAWNS` DISABLE KEYS */;
-INSERT INTO `Object_SPAWNS` (`ObjectUID`, `Classname`, `Worldspace`, `Inventory`, `Hitpoints`, `MapID`, `Last_changed`) VALUES
+-- Dumping data for table hivemind.object_spawns: 94 rows
+DELETE FROM `object_spawns`;
+/*!40000 ALTER TABLE `object_spawns` DISABLE KEYS */;
+INSERT INTO `object_spawns` (`ObjectUID`, `Classname`, `Worldspace`, `Inventory`, `Hitpoints`, `MapID`, `Last_changed`) VALUES
 	(30728533, 'UAZ_Unarmed_TK_EP1', '[0,[12140.168, 12622.802,0]]', '[[[], []], [["20Rnd_762x51_DMR"], [5]], [[], []]]', '[["palivo",1],["motor",1],["karoserie",1],["wheel_1_1_steering",1],["wheel_1_2_steering",1],["wheel_2_1_steering",1],["wheel_2_2_steering",1]]', '', NULL),
 	(26883451, 'UAZ_Unarmed_TK_CIV_EP1', '[0,[6279.4966, 7810.3691,0]]', '[[[], []], [["20Rnd_762x51_DMR"], [5]], [[], []]]', '[["palivo",1],["motor",1],["karoserie",1],["wheel_1_1_steering",1],["wheel_1_2_steering",1],["wheel_2_1_steering",1],["wheel_2_2_steering",1]]', '', NULL),
 	(42231659, 'UAZ_Unarmed_UN_EP1', '[45,[6865.2432,2481.6943,0]]', '[[[], []], [["30Rnd_556x45_StanagSD"], [5]], [[], []]]', '[["palivo",1],["motor",1],["karoserie",1],["wheel_1_1_steering",1],["wheel_1_2_steering",1],["wheel_2_1_steering",1],["wheel_2_2_steering",1]]', '', NULL),
@@ -493,7 +493,7 @@ INSERT INTO `Object_SPAWNS` (`ObjectUID`, `Classname`, `Worldspace`, `Inventory`
 	(12700771, 'Pickup_PK_INS', '[-24,[7006.14,7717.57,-6]]', '[[[],[]],[["HandGrenade_West","ItemWaterbottle","30Rnd_556x45_Stanag"],[5,1,6]],[[],[]]]', '[["glass1",1],["glass2",1],["glass3",1],["motor",0.8],["palivo",0.8],["wheel_1_1_steering",1],["wheel_1_2_steering",1],["wheel_2_1_steering",1],["wheel_2_2_steering",1],["karoserie",1],["glass4",1]]', '', NULL),
 	(36533865, 'Offroad_DSHKM_INS', '[363,[5337.62,8656.55,0]]', '[[[],[]],[[],[]],[[],[]]]', '[["glass1",1],["glass2",1],["glass3",1],["motor",0.8],["palivo",0.8],["wheel_1_1_steering",1],["wheel_1_2_steering",1],["wheel_2_1_steering",1],["wheel_2_2_steering",1],["karoserie",1],["glass4",1]]', '', NULL),
 	(16462967, 'Offroad_DSHKM_INS', '[-169,[4625.61,9675.62,0]]', '[[[],[]],[[],[]],[[],[]]]', '[["glass1",1],["glass2",1],["glass3",1],["motor",0.8],["palivo",0.8],["wheel_1_1_steering",1],["wheel_1_2_steering",1],["wheel_2_1_steering",1],["wheel_2_2_steering",1],["karoserie",1],["glass4",1]]', '', NULL);
-/*!40000 ALTER TABLE `Object_SPAWNS` ENABLE KEYS */;
+/*!40000 ALTER TABLE `object_spawns` ENABLE KEYS */;
 
 -- Dumping structure for procedure hivemind.pCleanup
 DELIMITER //
@@ -507,75 +507,75 @@ BEGIN
  
 #remove damaged objects
         DELETE
-                FROM Object_DATA
+                FROM object_data
                 WHERE CharacterID != 0 AND Damage = 1;
 
-#remove damaged vehicles older than Vehicle_SPAWNS.CleanupTime
-	DELETE FROM Object_DATA
+#remove damaged vehicles older than vehicle_spawns.CleanupTime
+	DELETE FROM object_data
 	WHERE CharacterID = 0
 		AND Damage = 1
 		AND SYSDATE() > DATE(last_updated) + INTERVAL (
 			SELECT CleanupTime
-			FROM Vehicle_SPAWNS
-			WHERE Vehicle_SPAWNS.Classname = Object_DATA.Classname
+			FROM vehicle_spawns
+			WHERE vehicle_spawns.Classname = object_data.Classname
 			LIMIT 1) MINUTE;
 
 #remove empty tents older than seven days
         DELETE
-                FROM Object_DATA
+                FROM object_data
                 WHERE (Classname like 'TentStorage%' or Classname like 'StashSmall%' or Classname like 'StashMedium%' or Classname like 'DomeTentStorage%')
                         AND DATE(last_updated) < CURDATE() - INTERVAL 7 DAY
                         AND Inventory = '[[[],[]],[[],[]],[[],[]]]';
        
         DELETE
-                FROM Object_DATA
+                FROM object_data
                 WHERE (Classname like 'TentStorage%' or Classname like 'StashSmall%' or Classname like 'StashMedium%' or Classname like 'DomeTentStorage%')
                         AND DATE(last_updated) < CURDATE() - INTERVAL 7 DAY
                         AND Inventory = '[]';          
  
 #remove barbed wire older than two days
         DELETE
-            FROM Object_DATA
+            FROM object_data
 				WHERE Classname = 'Wire_cat1'
 					AND DATE(last_updated) < CURDATE() - INTERVAL 2 DAY;
 					                      
 #remove Tank Traps older than fifteen days
         DELETE
-                FROM Object_DATA
+                FROM object_data
                 WHERE Classname = 'Hedgehog_DZ'
                         AND DATE(last_updated) < CURDATE() - INTERVAL 15 DAY;
  
 #remove Sandbags older than twenty days
         DELETE
-                FROM Object_DATA
+                FROM object_data
                 WHERE Classname = 'Sandbag1_DZ'
                         AND DATE(last_updated) < CURDATE() - INTERVAL 20 DAY;
  
 #remove Traps older than five days
         DELETE
-                FROM Object_DATA
+                FROM object_data
                 WHERE (Classname = 'BearTrap_DZ' or Classname = 'TrapBearTrapFlare' or Classname = 'TrapBearTrapSmoke' or Classname = 'Trap_Cans' or Classname = 'TrapTripwireFlare' or Classname = 'TrapTripwireGrenade' or Classname = 'TrapTripwireSmoke')
                         AND DATE(last_updated) < CURDATE() - INTERVAL 5 DAY; 
                         
 #remove incomplete fences after 1 Day								
         DELETE
-                FROM Object_DATA
+                FROM object_data
                 WHERE (Classname = 'WoodenFence_1_foundation')
                         AND DATE(last_updated) < CURDATE() - INTERVAL 1 Day;  
                         
 #remove incomplete fences after 3 Dayz								
         DELETE
-                FROM Object_DATA
+                FROM object_data
                 WHERE (Classname = 'WoodenFence_1_frame' or Classname = 'WoodenFence_quaterpanel' or Classname = 'WoodenFence_halfpanel' or Classname = 'WoodenFence_thirdpanel')
                         AND DATE(last_updated) < CURDATE() - INTERVAL 3 Day; 
                        
 #remove dead players from data table
         DELETE
-                FROM Character_DATA
+                FROM character_data
                 WHERE Alive=0 AND DATE(last_updated) < CURDATE() - INTERVAL 90 Day; 
 #Remove Bad Data
 				DELETE
-								FROM Object_DATA
+								FROM object_data
 								WHERE Classname like '%_base';
 			
 #Remove wire if the owner has died.						
@@ -588,7 +588,7 @@ BEGIN
 					
 #remove Base_Fire_DZ older than 5 days
         DELETE
-            FROM Object_DATA
+            FROM object_data
 				WHERE Classname = 'Base_Fire_DZ'
 					AND DATE(last_updated) < CURDATE() - INTERVAL 5 DAY;
 END//
@@ -603,7 +603,7 @@ BEGIN
 	
 #Start Maintenance Mode       
 	Update
-		Object_DATA 
+		object_data 
 			set Hitpoints = '["Maintenance"]'                    
 				WHERE (Classname = 'WoodenFence_1' or Classname = 'WoodenFence_2' or Classname = 'WoodenFence_3' or Classname = 'WoodenFence_4' or Classname = 'WoodenFence_5' or Classname = 'WoodenFence_6' or Classname = 'WoodenFence_7')
 				AND DATE(last_updated) < CURDATE() - INTERVAL 7 DAY
@@ -611,7 +611,7 @@ BEGIN
  				
 #Check WoodenFence_1_foundation
 	update
-		Object_DATA
+		object_data
 			set Classname = 'WoodenFence_1_foundation'
 				where Classname = 'WoodenFence_1_frame'
 				AND Hitpoints = '["Maintenance"]'
@@ -619,7 +619,7 @@ BEGIN
 
 #Check WoodenFence_1_frame
 	update
-		Object_DATA
+		object_data
 			set Classname = 'WoodenFence_1_frame'
 				where Classname = 'WoodenFence_quaterpanel'
 				AND Hitpoints = '["Maintenance"]'
@@ -627,7 +627,7 @@ BEGIN
 
 #Check WoodenFence_halfpanel
 	update
-		Object_DATA
+		object_data
 			set Classname = 'WoodenFence_quaterpanel'
 				where Classname = 'WoodenFence_halfpanel'
 				AND Hitpoints = '["Maintenance"]'
@@ -635,7 +635,7 @@ BEGIN
 				
 #Check WoodenFence_thirdpanel
 	update
-		Object_DATA
+		object_data
 			set Classname = 'WoodenFence_halfpanel'
 				where Classname = 'WoodenFence_thirdpanel'
 				AND Hitpoints = '["Maintenance"]'
@@ -643,49 +643,49 @@ BEGIN
 				 
 #Check fence 1
 	update
-		Object_DATA
+		object_data
 			set Classname = 'WoodenFence_thirdpanel'
 				where Classname = 'WoodenFence_1'
 				AND Hitpoints = '["Maintenance"]'
 				AND DATE(last_updated) < CURDATE() - INTERVAL 3 DAY;
 #Check fence 2
 	update
-		Object_DATA
+		object_data
 			set Classname = 'WoodenFence_1'
 				where Classname = 'WoodenFence_2'
 				AND Hitpoints = '["Maintenance"]'
 				AND DATE(last_updated) < CURDATE() - INTERVAL 3 DAY;	
 #Check fence 3
 	update
-		Object_DATA
+		object_data
 			set Classname = 'WoodenFence_2'
 				where Classname = 'WoodenFence_3'
 				AND Hitpoints = '["Maintenance"]'
 				AND DATE(last_updated) < CURDATE() - INTERVAL 3 DAY;					
 #Check fence 4
 	update
-		Object_DATA
+		object_data
 			set Classname = 'WoodenFence_3'
 				where Classname = 'WoodenFence_4'
 				AND Hitpoints = '["Maintenance"]'
 				AND DATE(last_updated) < CURDATE() - INTERVAL 3 DAY;					
 #Check fence 5
 	update
-		Object_DATA
+		object_data
 			set Classname = 'WoodenFence_4'
 				where Classname = 'WoodenFence_5'
 				AND Hitpoints = '["Maintenance"]'
 				AND DATE(last_updated) < CURDATE() - INTERVAL 3 DAY;					
 #Check fence 6
 	update
-		Object_DATA
+		object_data
 			set Classname = 'WoodenFence_5'
 				where Classname = 'WoodenFence_6'
 				AND Hitpoints = '["Maintenance"]'
 				AND DATE(last_updated) < CURDATE() - INTERVAL 3 DAY;					
 #Check fence 7
 	update
-		Object_DATA
+		object_data
 			set Classname = 'WoodenFence_6'
 				where Classname = 'WoodenFence_7'
 				AND Hitpoints = '["Maintenance"]'
@@ -694,7 +694,7 @@ BEGIN
 #DayZ_WoodenGates = ["WoodenGate_1","WoodenGate_2","WoodenGate_3","WoodenGate_4"];
 #Start Maintenance Mode Gates				
 	Update
-		Object_DATA 
+		object_data 
 			set Hitpoints = '["Maintenance"]'                    
 				WHERE (Classname = 'WoodenGate_1' or Classname = 'WoodenGate_1' or Classname = 'WoodenGate_1' or Classname = 'WoodenGate_1')
 				AND DATE(last_updated) < CURDATE() - INTERVAL 7 DAY
@@ -702,7 +702,7 @@ BEGIN
 				
 #Check WoodenGate_1
 	update
-		Object_DATA
+		object_data
 			set Classname = 'WoodenGate_1'
 				where Classname = 'WoodenGate_foundation'
 				AND Hitpoints = '["Maintenance"]'
@@ -710,7 +710,7 @@ BEGIN
 				
 #Check WoodenGate_2
 	update
-		Object_DATA
+		object_data
 			set Classname = 'WoodenGate_1'
 				where Classname = 'WoodenGate_2'
 				AND Hitpoints = '["Maintenance"]'
@@ -718,7 +718,7 @@ BEGIN
 				
 #Check WoodenGate_3
 	update
-		Object_DATA
+		object_data
 			set Classname = 'WoodenGate_2'
 				where Classname = 'WoodenGate_3'
 				AND Hitpoints = '["Maintenance"]'
@@ -726,7 +726,7 @@ BEGIN
 				
 #Check WoodenGate_4
 	update
-		Object_DATA
+		object_data
 			set Classname = 'WoodenGate_3'
 				where Classname = 'WoodenGate_4'
 				AND Hitpoints = '["Maintenance"]'
@@ -788,8 +788,8 @@ BEGIN
 END//
 DELIMITER ;
 
--- Dumping structure for table hivemind.Player_DATA
-CREATE TABLE IF NOT EXISTS `Player_DATA` (
+-- Dumping structure for table hivemind.player_data
+CREATE TABLE IF NOT EXISTS `player_data` (
   `playerID` int(11) NOT NULL DEFAULT '0',
   `playerUID` varchar(45) NOT NULL DEFAULT '0',
   `playerName` varchar(50) NOT NULL DEFAULT 'Null',
@@ -799,13 +799,13 @@ CREATE TABLE IF NOT EXISTS `Player_DATA` (
   KEY `playerUID` (`playerUID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dumping data for table hivemind.Player_DATA: ~0 rows (approximately)
-DELETE FROM `Player_DATA`;
-/*!40000 ALTER TABLE `Player_DATA` DISABLE KEYS */;
-/*!40000 ALTER TABLE `Player_DATA` ENABLE KEYS */;
+-- Dumping data for table hivemind.player_data: ~0 rows (approximately)
+DELETE FROM `player_data`;
+/*!40000 ALTER TABLE `player_data` DISABLE KEYS */;
+/*!40000 ALTER TABLE `player_data` ENABLE KEYS */;
 
--- Dumping structure for table hivemind.Player_LOGIN
-CREATE TABLE IF NOT EXISTS `Player_LOGIN` (
+-- Dumping structure for table hivemind.player_login
+CREATE TABLE IF NOT EXISTS `player_login` (
   `LoginID` int(11) NOT NULL AUTO_INCREMENT,
   `PlayerUID` varchar(45) NOT NULL,
   `CharacterID` int(11) NOT NULL DEFAULT '0',
@@ -814,10 +814,10 @@ CREATE TABLE IF NOT EXISTS `Player_LOGIN` (
   PRIMARY KEY (`LoginID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dumping data for table hivemind.Player_LOGIN: ~0 rows (approximately)
-DELETE FROM `Player_LOGIN`;
-/*!40000 ALTER TABLE `Player_LOGIN` DISABLE KEYS */;
-/*!40000 ALTER TABLE `Player_LOGIN` ENABLE KEYS */;
+-- Dumping data for table hivemind.player_login: ~0 rows (approximately)
+DELETE FROM `player_login`;
+/*!40000 ALTER TABLE `player_login` DISABLE KEYS */;
+/*!40000 ALTER TABLE `player_login` ENABLE KEYS */;
 
 -- Dumping structure for procedure hivemind.pMain
 DELIMITER //
@@ -859,7 +859,7 @@ BEGIN
 	(
 		SELECT	CONVERT(SUBSTRING(SUBSTRING_INDEX(@ws, ",", 2), LENGTH(SUBSTRING_INDEX(@ws, ",", 1)) + 2), DECIMAL(10, 5)) AS X,
 				CONVERT(SUBSTRING(SUBSTRING_INDEX(@ws, ",", 3), LENGTH(SUBSTRING_INDEX(@ws, ",", 2)) + 2), DECIMAL(10, 5)) AS Y
-		FROM Object_DATA
+		FROM object_data
 		WHERE CharacterID = 0
 			AND Instance = ServerInstance
 			AND (@ws := Worldspace) IS NOT NULL
@@ -870,7 +870,7 @@ BEGIN
 	DROP TEMPORARY TABLE IF EXISTS temp_locations;
 	CREATE TEMPORARY TABLE temp_locations AS
 	(
-		SELECT Vehicle_LOCATIONS.ID, temp2.Worldspace
+		SELECT vehicle_locations.ID, temp2.Worldspace
 		FROM
 		(
 			SELECT Worldspace
@@ -879,7 +879,7 @@ BEGIN
 				SELECT	Worldspace,
 						CONVERT(SUBSTRING(SUBSTRING_INDEX(@ws, ",", 2), LENGTH(SUBSTRING_INDEX(@ws, ",", 1)) + 2), DECIMAL(10, 5)) AS X,
 						CONVERT(SUBSTRING(SUBSTRING_INDEX(@ws, ",", 3), LENGTH(SUBSTRING_INDEX(@ws, ",", 2)) + 2), DECIMAL(10, 5)) AS Y
-				FROM (SELECT Worldspace FROM Vehicle_LOCATIONS GROUP BY Worldspace) AS temp
+				FROM (SELECT Worldspace FROM vehicle_locations GROUP BY Worldspace) AS temp
 				WHERE (@ws := Worldspace) IS NOT NULL
 					AND (@ws := REPLACE(@ws, "[", "")) IS NOT NULL
 					AND (@ws := REPLACE(@ws, "]", "")) IS NOT NULL
@@ -893,8 +893,8 @@ BEGIN
 				)
 			) IS NULL OR @distance > SearchRadius
 		) AS temp2
-		JOIN Vehicle_LOCATIONS
-			ON Vehicle_LOCATIONS.Worldspace = temp2.Worldspace
+		JOIN vehicle_locations
+			ON vehicle_locations.Worldspace = temp2.Worldspace
 	);
 	
 	DROP TEMPORARY TABLE IF EXISTS temp_spawns;
@@ -904,7 +904,7 @@ BEGIN
 		FROM
 		(
 			SELECT *
-			FROM Vehicle_SPAWNS
+			FROM vehicle_spawns
 			WHERE (@numSpawnable := getNumSpawnable(ServerInstance, ID)) IS NOT NULL
 				AND @numSpawnable > 0
 			ORDER BY RAND()
@@ -921,7 +921,7 @@ BEGIN
 		SET @numSpawnable = getNumSpawnable(ServerInstance, @spawnid);
 		IF (@numSpawnable > 0 AND RAND() < @chance) THEN
 			SET @worldspace = (SELECT Worldspace FROM temp_spawns LIMIT 1);
-			INSERT INTO Object_DATA (ObjectUID, Classname, Instance, CharacterID, Worldspace, Inventory, Hitpoints, Fuel, Damage, Datestamp)
+			INSERT INTO object_data (ObjectUID, Classname, Instance, CharacterID, Worldspace, Inventory, Hitpoints, Fuel, Damage, Datestamp)
 			SELECT generateUID(ServerInstance), Classname, ServerInstance, 0, Worldspace,
 				randomizeVehicleInventory(Classname),
 				randomizeVehicleHitpoints(Classname),
@@ -959,7 +959,7 @@ BEGIN
 	#---------------------------------------------------------------
 	
 	DECLARE Result varchar(2000);
-	DECLARE Hitpoints_ID INT DEFAULT (SELECT Hitpoints FROM Vehicle_SPAWNS WHERE Classname = class LIMIT 1);
+	DECLARE Hitpoints_ID INT DEFAULT (SELECT Hitpoints FROM vehicle_spawns WHERE Classname = class LIMIT 1);
 	
 	IF (ISNULL(Hitpoints_ID)) THEN
 		RETURN "[]";
@@ -967,7 +967,7 @@ BEGIN
 	
 	SELECT GROUP_CONCAT("[\"", PartName, "\",", TRUNCATE(IF ((@r := MinDamage + RAND() * (MaxDamage - MinDamage)) < Threshold, MinDamage, @r), 4), "]")
 		INTO Result
-		FROM Vehicle_HITPOINTS
+		FROM vehicle_hitpoints
 		WHERE ID = Hitpoints_ID;
 	
 	RETURN CONCAT_WS("", "[", Result, "]");
@@ -986,11 +986,11 @@ BEGIN
 	DECLARE BackpackClasses		VARCHAR(255);
 	DECLARE BackpackAmounts		VARCHAR(255);
 	
-	DECLARE InventoryID INT DEFAULT (SELECT Inventory FROM Vehicle_SPAWNS WHERE Classname = c LIMIT 1);
+	DECLARE InventoryID INT DEFAULT (SELECT Inventory FROM vehicle_spawns WHERE Classname = c LIMIT 1);
 	
-	DECLARE MaxWeapons		INT DEFAULT (SELECT MaxWeapons		FROM Vehicle_SPAWNS WHERE Classname = c LIMIT 1);
-	DECLARE MaxMagazines	INT DEFAULT (SELECT MaxMagazines	FROM Vehicle_SPAWNS WHERE Classname = c LIMIT 1);
-	DECLARE MaxBackpacks	INT DEFAULT (SELECT MaxBackpacks	FROM Vehicle_SPAWNS WHERE Classname = c LIMIT 1);
+	DECLARE MaxWeapons		INT DEFAULT (SELECT MaxWeapons		FROM vehicle_spawns WHERE Classname = c LIMIT 1);
+	DECLARE MaxMagazines	INT DEFAULT (SELECT MaxMagazines	FROM vehicle_spawns WHERE Classname = c LIMIT 1);
+	DECLARE MaxBackpacks	INT DEFAULT (SELECT MaxBackpacks	FROM vehicle_spawns WHERE Classname = c LIMIT 1);
 	
 	IF (ISNULL(InventoryID)) THEN
 		RETURN "[]";
@@ -1005,7 +1005,7 @@ BEGIN
 	FROM 
 	(
 		SELECT *
-		FROM Vehicle_INVENTORY
+		FROM vehicle_inventory
 		WHERE ID = InventoryID
 			AND Type = "Weapon" 
 			AND RAND() < Chance
@@ -1024,7 +1024,7 @@ BEGIN
 	FROM 
 	(
 		SELECT *
-		FROM Vehicle_INVENTORY 
+		FROM vehicle_inventory 
 		WHERE ID = InventoryID
 			AND Type = "Magazine" 
 			AND RAND() < Chance
@@ -1043,7 +1043,7 @@ BEGIN
 	FROM 
 	(
 		SELECT *
-		FROM Vehicle_INVENTORY 
+		FROM vehicle_inventory 
 		WHERE ID = InventoryID
 			AND Type = "Backpack" 
 			AND RAND() < Chance
@@ -1086,17 +1086,17 @@ BEGIN
 END//
 DELIMITER ;
 
--- Dumping structure for table hivemind.Vehicle_GROUPS
-CREATE TABLE IF NOT EXISTS `Vehicle_GROUPS` (
+-- Dumping structure for table hivemind.vehicle_groups
+CREATE TABLE IF NOT EXISTS `vehicle_groups` (
   `ID` int(11) NOT NULL,
   `MaxNum` int(11) NOT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='0 Helicopters\r\n1 Military cars (Landrover W, Landrover D, HMMWV)\r\n2 Armed cars\r\n3 Bikes\r\n4 Trucks\r\n5 Buses\r\n6 Civilian cars\r\n7 Civilian cars high end\r\n8 Civilian cars low end\r\n9 AN-2\r\n10 UH-1H';
 
--- Dumping data for table hivemind.Vehicle_GROUPS: 9 rows
-DELETE FROM `Vehicle_GROUPS`;
-/*!40000 ALTER TABLE `Vehicle_GROUPS` DISABLE KEYS */;
-INSERT INTO `Vehicle_GROUPS` (`ID`, `MaxNum`) VALUES
+-- Dumping data for table hivemind.vehicle_groups: 9 rows
+DELETE FROM `vehicle_groups`;
+/*!40000 ALTER TABLE `vehicle_groups` DISABLE KEYS */;
+INSERT INTO `vehicle_groups` (`ID`, `MaxNum`) VALUES
 	(0, 4),
 	(1, 3),
 	(2, 2),
@@ -1106,10 +1106,10 @@ INSERT INTO `Vehicle_GROUPS` (`ID`, `MaxNum`) VALUES
 	(6, 15),
 	(9, 1),
 	(10, 2);
-/*!40000 ALTER TABLE `Vehicle_GROUPS` ENABLE KEYS */;
+/*!40000 ALTER TABLE `vehicle_groups` ENABLE KEYS */;
 
--- Dumping structure for table hivemind.Vehicle_HITPOINTS
-CREATE TABLE IF NOT EXISTS `Vehicle_HITPOINTS` (
+-- Dumping structure for table hivemind.vehicle_hitpoints
+CREATE TABLE IF NOT EXISTS `vehicle_hitpoints` (
   `ID` int(11) NOT NULL,
   `PartName` varchar(255) CHARACTER SET latin1 NOT NULL,
   `MinDamage` double(20,10) NOT NULL DEFAULT '0.5000000000',
@@ -1117,10 +1117,10 @@ CREATE TABLE IF NOT EXISTS `Vehicle_HITPOINTS` (
   PRIMARY KEY (`ID`,`PartName`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table hivemind.Vehicle_HITPOINTS: 54 rows
-DELETE FROM `Vehicle_HITPOINTS`;
-/*!40000 ALTER TABLE `Vehicle_HITPOINTS` DISABLE KEYS */;
-INSERT INTO `Vehicle_HITPOINTS` (`ID`, `PartName`, `MinDamage`, `MaxDamage`) VALUES
+-- Dumping data for table hivemind.vehicle_hitpoints: 54 rows
+DELETE FROM `vehicle_hitpoints`;
+/*!40000 ALTER TABLE `vehicle_hitpoints` DISABLE KEYS */;
+INSERT INTO `vehicle_hitpoints` (`ID`, `PartName`, `MinDamage`, `MaxDamage`) VALUES
 	(1, 'palivo', 0.6000000000, 0.8000000000),
 	(1, 'motor', 0.6000000000, 0.8000000000),
 	(1, 'karoserie', 0.6000000000, 1.0000000000),
@@ -1175,10 +1175,10 @@ INSERT INTO `Vehicle_HITPOINTS` (`ID`, `PartName`, `MinDamage`, `MaxDamage`) VAL
 	(6, 'wheel_2_2_steering', 0.6000000000, 1.0000000000),
 	(6, 'karoserie', 0.6000000000, 1.0000000000),
 	(6, 'glass4', 0.6000000000, 1.0000000000);
-/*!40000 ALTER TABLE `Vehicle_HITPOINTS` ENABLE KEYS */;
+/*!40000 ALTER TABLE `vehicle_hitpoints` ENABLE KEYS */;
 
--- Dumping structure for table hivemind.Vehicle_INVENTORY
-CREATE TABLE IF NOT EXISTS `Vehicle_INVENTORY` (
+-- Dumping structure for table hivemind.vehicle_inventory
+CREATE TABLE IF NOT EXISTS `vehicle_inventory` (
   `ID` int(11) NOT NULL,
   `Type` enum('Backpack','Magazine','Weapon') CHARACTER SET latin1 NOT NULL DEFAULT 'Magazine',
   `Classname` varchar(255) CHARACTER SET latin1 NOT NULL,
@@ -1189,10 +1189,10 @@ CREATE TABLE IF NOT EXISTS `Vehicle_INVENTORY` (
   KEY `ObjectUID` (`ID`) USING BTREE
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table hivemind.Vehicle_INVENTORY: 14 rows
-DELETE FROM `Vehicle_INVENTORY`;
-/*!40000 ALTER TABLE `Vehicle_INVENTORY` DISABLE KEYS */;
-INSERT INTO `Vehicle_INVENTORY` (`ID`, `Type`, `Classname`, `MinAmount`, `MaxAmount`, `Chance`) VALUES
+-- Dumping data for table hivemind.vehicle_inventory: 14 rows
+DELETE FROM `vehicle_inventory`;
+/*!40000 ALTER TABLE `vehicle_inventory` DISABLE KEYS */;
+INSERT INTO `vehicle_inventory` (`ID`, `Type`, `Classname`, `MinAmount`, `MaxAmount`, `Chance`) VALUES
 	(30728533, 'Magazine', '20Rnd_762x51_DMR', 2, 4, 1.0000000000),
 	(30728533, 'Weapon', 'DMR_DZ', 1, 1, 0.0500000000),
 	(26883451, 'Magazine', '20Rnd_762x51_DMR', 1, 3, 1.0000000000),
@@ -1207,19 +1207,19 @@ INSERT INTO `Vehicle_INVENTORY` (`ID`, `Type`, `Classname`, `MinAmount`, `MaxAmo
 	(25844760, 'Weapon', 'MeleeMachete', 1, 1, 0.9000000000),
 	(25844760, 'Weapon', 'LeeEnfield', 1, 1, 0.7000000000),
 	(25844760, 'Magazine', '10x_303', 1, 3, 1.0000000000);
-/*!40000 ALTER TABLE `Vehicle_INVENTORY` ENABLE KEYS */;
+/*!40000 ALTER TABLE `vehicle_inventory` ENABLE KEYS */;
 
--- Dumping structure for table hivemind.Vehicle_LOCATIONS
-CREATE TABLE IF NOT EXISTS `Vehicle_LOCATIONS` (
+-- Dumping structure for table hivemind.vehicle_locations
+CREATE TABLE IF NOT EXISTS `vehicle_locations` (
   `ID` int(11) NOT NULL,
   `Worldspace` varchar(255) CHARACTER SET latin1 NOT NULL,
   PRIMARY KEY (`ID`,`Worldspace`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='0 ATV\r\n1 Motorcycle\r\n2 Huey\r\n4 Mi-17\r\n3 Little bird\r\n5 AN-2\r\n6 Bike\r\n7 Military car (Landrover, HMMWV, Camo UAZs, Armed pickups)\r\n10 Civilian car (including SUV)\r\n11 Bus\r\n12 Tractor\r\n13 Truck\r\n14 Boat';
 
--- Dumping data for table hivemind.Vehicle_LOCATIONS: 144 rows
-DELETE FROM `Vehicle_LOCATIONS`;
-/*!40000 ALTER TABLE `Vehicle_LOCATIONS` DISABLE KEYS */;
-INSERT INTO `Vehicle_LOCATIONS` (`ID`, `Worldspace`) VALUES
+-- Dumping data for table hivemind.vehicle_locations: 144 rows
+DELETE FROM `vehicle_locations`;
+/*!40000 ALTER TABLE `vehicle_locations` DISABLE KEYS */;
+INSERT INTO `vehicle_locations` (`ID`, `Worldspace`) VALUES
 	(0, '[126,[6556.34,5621.66,0]]'),
 	(0, '[166,[8316.43,7497.42,0]]'),
 	(0, '[202,[11464.035, 11381.071,0]]'),
@@ -1364,10 +1364,10 @@ INSERT INTO `Vehicle_LOCATIONS` (`ID`, `Worldspace`) VALUES
 	(14, '[315,[13222.181,10015.431,0]]'),
 	(14, '[315,[8317.2676,2348.6055,0]]'),
 	(14, '[55,[13454.882, 13731.796,0]]');
-/*!40000 ALTER TABLE `Vehicle_LOCATIONS` ENABLE KEYS */;
+/*!40000 ALTER TABLE `vehicle_locations` ENABLE KEYS */;
 
--- Dumping structure for table hivemind.Vehicle_SPAWNS
-CREATE TABLE IF NOT EXISTS `Vehicle_SPAWNS` (
+-- Dumping structure for table hivemind.vehicle_spawns
+CREATE TABLE IF NOT EXISTS `vehicle_spawns` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `Classname` varchar(255) NOT NULL,
   `Chance` double NOT NULL,
@@ -1387,10 +1387,10 @@ CREATE TABLE IF NOT EXISTS `Vehicle_SPAWNS` (
   UNIQUE KEY `Classname` (`Classname`) USING HASH
 ) ENGINE=MyISAM AUTO_INCREMENT=39 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table hivemind.Vehicle_SPAWNS: 38 rows
-DELETE FROM `Vehicle_SPAWNS`;
-/*!40000 ALTER TABLE `Vehicle_SPAWNS` DISABLE KEYS */;
-INSERT INTO `Vehicle_SPAWNS` (`ID`, `Classname`, `Chance`, `MaxNum`, `Location`, `Inventory`, `Hitpoints`, `MinDamage`, `MaxDamage`, `MinFuel`, `MaxFuel`, `MaxWeapons`, `MaxMagazines`, `MaxBackpacks`, `CleanupTime`) VALUES
+-- Dumping data for table hivemind.vehicle_spawns: 38 rows
+DELETE FROM `vehicle_spawns`;
+/*!40000 ALTER TABLE `vehicle_spawns` DISABLE KEYS */;
+INSERT INTO `vehicle_spawns` (`ID`, `Classname`, `Chance`, `MaxNum`, `Location`, `Inventory`, `Hitpoints`, `MinDamage`, `MaxDamage`, `MinFuel`, `MaxFuel`, `MaxWeapons`, `MaxMagazines`, `MaxBackpacks`, `CleanupTime`) VALUES
 	(1, 'UAZ_Unarmed_TK_EP1', 0.7, 2, 7, NULL, 1, 0.2, 0.8, 0, 0.8, 1, 3, 0, 300),
 	(2, 'UAZ_Unarmed_UN_EP1', 0.59, 2, 10, NULL, 1, 0.2, 0.8, 0, 0.8, 1, 0, 0, 300),
 	(3, 'UAZ_RU', 0.59, 1, 7, NULL, 1, 0.2, 0.8, 0, 0.8, 1, 2, 0, 300),
@@ -1429,19 +1429,19 @@ INSERT INTO `Vehicle_SPAWNS` (`ID`, `Classname`, `Chance`, `MaxNum`, `Location`,
 	(36, 'Offroad_DSHKM_INS', 0.07, 1, 7, NULL, 6, 0.2, 0.8, 0, 0.8, 0, 0, 0, 300),
 	(37, 'AN2_2_DZ', 1, 1, 5, NULL, NULL, 0, 0, 0.1, 0.4, 0, 0, 0, 900),
 	(38, 'UH1H_2_DZ', 0.3, 1, 2, NULL, 3, 0.2, 0.8, 0, 0.8, 0, 0, 0, 900);
-/*!40000 ALTER TABLE `Vehicle_SPAWNS` ENABLE KEYS */;
+/*!40000 ALTER TABLE `vehicle_spawns` ENABLE KEYS */;
 
--- Dumping structure for table hivemind.Vehicle_SPAWNS_GROUPS
-CREATE TABLE IF NOT EXISTS `Vehicle_SPAWNS_GROUPS` (
+-- Dumping structure for table hivemind.vehicle_spawns_groups
+CREATE TABLE IF NOT EXISTS `vehicle_spawns_groups` (
   `Spawn_ID` int(11) NOT NULL,
   `Group_ID` int(11) NOT NULL,
   PRIMARY KEY (`Spawn_ID`,`Group_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dumping data for table hivemind.Vehicle_SPAWNS_GROUPS: ~29 rows (approximately)
-DELETE FROM `Vehicle_SPAWNS_GROUPS`;
-/*!40000 ALTER TABLE `Vehicle_SPAWNS_GROUPS` DISABLE KEYS */;
-INSERT INTO `Vehicle_SPAWNS_GROUPS` (`Spawn_ID`, `Group_ID`) VALUES
+-- Dumping data for table hivemind.vehicle_spawns_groups: ~29 rows (approximately)
+DELETE FROM `vehicle_spawns_groups`;
+/*!40000 ALTER TABLE `vehicle_spawns_groups` DISABLE KEYS */;
+INSERT INTO `vehicle_spawns_groups` (`Spawn_ID`, `Group_ID`) VALUES
 	(2, 6),
 	(4, 6),
 	(5, 6),
@@ -1471,7 +1471,7 @@ INSERT INTO `Vehicle_SPAWNS_GROUPS` (`Spawn_ID`, `Group_ID`) VALUES
 	(37, 9),
 	(38, 0),
 	(38, 10);
-/*!40000 ALTER TABLE `Vehicle_SPAWNS_GROUPS` ENABLE KEYS */;
+/*!40000 ALTER TABLE `vehicle_spawns_groups` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
