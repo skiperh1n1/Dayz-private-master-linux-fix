@@ -1,5 +1,6 @@
 # DayZ 1.8.8 with db fix
  # [EN]
+ 
 All who have this error:
 Database: [Error] Error 1146 (Table 'hivemind.Object_DATA' doesn't exist) in MySQLQuery SQL: 'SELECT COUNT(*) FROM `Object_DATA` WHERE `Instance` = 1337 AND `ObjectUID` <> 0 AND `CharacterID` <> 0 AND `Datestamp` < DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 6 DAY) AND ( (`Inventory` IS NULL) OR (`Inventory` = '[]') )'
 Database: [Error] Error 1146 (Table 'hivemind.Object_DATA' doesn't exist) in MySQLQuery SQL: 'SELECT `ObjectID`, `Classname`, `CharacterID`, `Worldspace`, `Inventory`, `Hitpoints`, `Fuel`, `Damage` FROM `Object_DATA` WHERE `Instance`=1337 AND `Classname` IS NOT NULL'
