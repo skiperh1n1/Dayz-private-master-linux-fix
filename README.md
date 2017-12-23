@@ -1,4 +1,4 @@
-# DayZ 1.8.9(B-1-1) with db fix
+# DayZ 1.9.0(B-1) with db fix
 
  # [EN]
  
